@@ -1,4 +1,4 @@
 PyQt6
-qfluentwidgets
+PyQt6-Fluent-Widgets
 pymongo
 pyinstaller

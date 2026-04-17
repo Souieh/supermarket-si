@@ -59,5 +59,12 @@ class ConfigDialog(QDialog):
                 self.portLineEdit.text(),
                 self.dbLineEdit.text())
 
+    def accept(self):
+        if self.validate():
+            super().accept()
+        else:
+            self.titleLabel.setText("خطأ في البيانات / Invalid Data")
+            self.titleLabel.setStyleSheet("color: red;")
+
     def exec(self):
         return super().exec() == QDialog.DialogCode.Accepted

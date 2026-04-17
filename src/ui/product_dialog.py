@@ -15,6 +15,7 @@ class ProductDialog(MessageBoxBase):
         self.qtyEdit = LineEdit(self)
         self.descEdit = TextEdit(self)
 
+        self.priceEdit.setValidator(QDoubleValidator(0.0, 999999.0, 2))
         self.codeEdit.setPlaceholderText("الرمز (Code)")
         self.nameEdit.setPlaceholderText("الاسم (Name)")
         self.categoryEdit.setPlaceholderText("الفئة (Category)")
@@ -48,6 +49,10 @@ class ProductDialog(MessageBoxBase):
                 self.nameEdit.text() and
                 self.priceEdit.text().replace('.', '', 1).isdigit() and
                 self.qtyEdit.text().isdigit())
+
+    def accept(self):
+        if self.validate():
+            super().accept()
 
     def get_data(self):
         return {

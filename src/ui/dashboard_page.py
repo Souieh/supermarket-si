@@ -40,6 +40,8 @@ class DashboardPage(QWidget):
         self.layout.addWidget(self.shortcutsLabel)
 
         self.shortcutsLayout = QHBoxLayout()
+        self.shortcutsLayout.setSpacing(15)
+        self.shortcutsLayout.setContentsMargins(10, 10, 10, 10)
         self.layout.addLayout(self.shortcutsLayout)
 
         self.btnAddProduct = PushButton(FIF.ADD, "إضافة منتج / Add Product")
@@ -77,16 +79,21 @@ class DashboardPage(QWidget):
         try:
             stats = Sale.get_dashboard_stats()
         except:
-            stats = {"total_products": 0, "out_of_stock": 0, "daily_revenue": 0, "total_sales": 0}
+            stats = {"total_products": 0, "out_of_stock": 0, "total_categories": 0,
+                     "daily_revenue": 0, "total_sales": 0, "total_purchases": 0}
 
         # Clear grid
         for i in reversed(range(self.grid.count())):
             self.grid.itemAt(i).widget().setParent(None)
 
-        self.grid.addWidget(StatCard("إجمالي المنتجات / Total Products", str(stats["total_products"]), FIF.APPLICATION), 0, 0)
-        self.grid.addWidget(StatCard("نفاذ المخزون / Out of Stock", str(stats["out_of_stock"]), FIF.CLOSE), 0, 1)
+        self.grid.setSpacing(20)
+        self.grid.addWidget(StatCard("المنتجات / Products", str(stats["total_products"]), FIF.APPLICATION), 0, 0)
+        self.grid.addWidget(StatCard("الفئات / Categories", str(stats["total_categories"]), FIF.MENU), 0, 1)
+        self.grid.addWidget(StatCard("نفاذ المخزون / Out of Stock", str(stats["out_of_stock"]), FIF.CLOSE), 0, 2)
+
         self.grid.addWidget(StatCard("إيرادات اليوم / Daily Revenue", f"{stats['daily_revenue']:.2f}", FIF.TAG), 1, 0)
-        self.grid.addWidget(StatCard("إجمالي المبيعات / Total Sales", str(stats["total_sales"]), FIF.SHOPPING_CART), 1, 1)
+        self.grid.addWidget(StatCard("إجمالي المبيعات / Sales", str(stats["total_sales"]), FIF.SHOPPING_CART), 1, 1)
+        self.grid.addWidget(StatCard("إجمالي المشتريات / Purchases", f"{stats['total_purchases']:.2f}", FIF.BASKETBALL), 1, 2)
 
     def showEvent(self, event):
         super().showEvent(event)

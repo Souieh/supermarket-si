@@ -7,8 +7,7 @@ from ..modules.sale import Sale
 from ..modules.receipt import Receipt
 
 class TouchButton(PushButton):
-    def __init__(self, icon, text, parent=None):
-        super().__init__(icon, text, parent)
+    def _postInit(self):
         self.setFixedHeight(80)
         self.setIconSize(QSize(32, 32))
         self.setStyleSheet("font-size: 18px; font-weight: bold;")
@@ -34,8 +33,9 @@ class CashierWindow(QWidget):
         self.leftLayout.addWidget(self.cartTable)
 
         # Right side: Controls
-        self.rightLayout = QVBoxLayout()
-        self.rightLayout.setFixedWidth(400)
+        self.rightPanel = QWidget(self)
+        self.rightPanel.setFixedWidth(400)
+        self.rightLayout = QVBoxLayout(self.rightPanel)
 
         self.codeEdit = LineEdit(self)
         self.codeEdit.setPlaceholderText("ادخل رمز المنتج / Enter Code")
@@ -75,7 +75,7 @@ class CashierWindow(QWidget):
         self.rightLayout.addWidget(self.clearButton)
 
         self.layout.addLayout(self.leftLayout, 1)
-        self.layout.addLayout(self.rightLayout)
+        self.layout.addWidget(self.rightPanel)
 
         self.cart_items = []
 

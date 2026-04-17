@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from qfluentwidgets import (FluentWindow, NavigationItemPosition,
                              FluentIcon as FIF)
 
@@ -8,6 +8,9 @@ from .dashboard_page import DashboardPage
 from .category_page import CategoryPage
 
 class AdminWindow(FluentWindow):
+    switchToCashier = pyqtSignal()
+    returnToLauncher = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Admin Panel - لوحة الإدارة")
@@ -26,6 +29,24 @@ class AdminWindow(FluentWindow):
         self.addSubInterface(self.categoryPage, FIF.MENU, "الفئات (Categories)")
         self.addSubInterface(self.productPage, FIF.APPLICATION, "المنتجات (Products)")
         self.addSubInterface(self.salesPage, FIF.SHOPPING_CART, "المبيعات (Sales)")
+
+        # Switch to Cashier
+        self.navigationInterface.addItem(
+            routeKey="cashier",
+            icon=FIF.SHOPPING_CART,
+            text="واجهة الكاشير (Cashier Interface)",
+            onClick=self.switchToCashier.emit,
+            position=NavigationItemPosition.BOTTOM
+        )
+
+        # Return to Launcher
+        self.navigationInterface.addItem(
+            routeKey="launcher",
+            icon=FIF.HOME,
+            text="القائمة الرئيسية (Launcher)",
+            onClick=self.returnToLauncher.emit,
+            position=NavigationItemPosition.BOTTOM
+        )
 
         self.navigationInterface.setExpandWidth(280)
         self.navigationInterface.setMinimumExpandWidth(0)

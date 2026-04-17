@@ -18,6 +18,10 @@ class SupermarketApp:
         sys.exit(self.app.exec())
 
     def show_launcher(self):
+        if self.admin_win:
+            self.admin_win.close()
+        if self.cashier_win:
+            self.cashier_win.close()
         self.launcher = LauncherWindow()
         # Connect cards directly
         self.launcher.adminCard.clicked.connect(self.open_admin)
@@ -31,7 +35,11 @@ class SupermarketApp:
         if not success:
             self.open_settings()
             return
+        if self.cashier_win:
+            self.cashier_win.close()
         self.admin_win = AdminWindow()
+        self.admin_win.switchToCashier.connect(self.open_cashier)
+        self.admin_win.returnToLauncher.connect(self.show_launcher)
         self.admin_win.show()
         self.launcher.hide()
 
@@ -41,7 +49,11 @@ class SupermarketApp:
         if not success:
             self.open_settings()
             return
+        if self.admin_win:
+            self.admin_win.close()
         self.cashier_win = CashierWindow()
+        self.cashier_win.switchToAdmin.connect(self.open_admin)
+        self.cashier_win.returnToLauncher.connect(self.show_launcher)
         self.cashier_win.show()
         self.launcher.hide()
 

@@ -28,9 +28,6 @@ class LauncherCard(CardWidget):
 
         self.btn.clicked.connect(self.clicked.emit)
 
-    def mouseReleaseEvent(self, event):
-        super().mouseReleaseEvent(event)
-        self.clicked.emit()
 
 class LauncherWindow(QWidget):
     def __init__(self):

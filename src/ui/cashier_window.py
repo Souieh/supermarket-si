@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidgetItem, QHeaderView, QGridLayout, QScrollArea
 from qfluentwidgets import (SubtitleLabel, TableWidget, LineEdit, PushButton,
                              FluentIcon as FIF, InfoBar, StrongBodyLabel, TitleLabel)
@@ -14,6 +14,9 @@ class TouchButton(PushButton):
         self.setStyleSheet("font-size: 18px; font-weight: bold;")
 
 class CashierWindow(QWidget):
+    switchToAdmin = pyqtSignal()
+    returnToLauncher = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("واجهة الكاشير / Cashier Interface")
@@ -102,6 +105,16 @@ class CashierWindow(QWidget):
         self.rightLayout.addWidget(self.totalLabel)
         self.rightLayout.addWidget(self.payButton)
         self.rightLayout.addWidget(self.clearButton)
+
+        # Switching buttons
+        self.switchLayout = QHBoxLayout()
+        self.adminBtn = PushButton(FIF.APPLICATION, "الإدارة / Admin")
+        self.adminBtn.clicked.connect(self.switchToAdmin.emit)
+        self.homeBtn = PushButton(FIF.HOME, "الرئيسية / Home")
+        self.homeBtn.clicked.connect(self.returnToLauncher.emit)
+        self.switchLayout.addWidget(self.adminBtn)
+        self.switchLayout.addWidget(self.homeBtn)
+        self.rightLayout.addLayout(self.switchLayout)
 
         self.layout.addLayout(self.leftLayout, 1)
         self.layout.addWidget(self.rightPanel)

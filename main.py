@@ -7,17 +7,28 @@ from src.ui.config_dialog import ConfigDialog
 from src.ui.launcher_window import LauncherWindow
 from src.ui.admin_window import AdminWindow
 from src.ui.cashier_window import CashierWindow
+from src.ui.login_window import LoginWindow
 
 class SupermarketApp:
     def __init__(self):
         self.app = QApplication(sys.argv)
+        self.login = None
         self.launcher = None
         self.admin_win = None
         self.cashier_win = None
 
     def start(self):
-        self.show_launcher()
+        self.show_login()
         sys.exit(self.app.exec())
+
+    def show_login(self):
+        self.login = LoginWindow()
+        self.login.loginSuccess.connect(self.on_login_success)
+        self.login.show()
+
+    def on_login_success(self, role):
+        self.login.hide()
+        self.show_launcher()
 
     def show_launcher(self):
         if self.admin_win:

@@ -27,13 +27,15 @@ class CashierWindow(QWidget):
         self.setFont(self.monoFont)
 
         self.mainLayout = QVBoxLayout(self)
-        self.mainLayout.setSpacing(10)
+        self.mainLayout.setSpacing(20)
+        self.mainLayout.setContentsMargins(20, 20, 20, 20)
 
         # 1. Top Section – Order Summary
         self.setup_order_summary()
 
         # Bottom section split into Left and Right
         self.bottomLayout = QHBoxLayout()
+        self.bottomLayout.setSpacing(20)
         self.mainLayout.addLayout(self.bottomLayout, 3)
 
         # 2. Left Panel – Products & Categories
@@ -58,7 +60,9 @@ class CashierWindow(QWidget):
         self.cartTable.setColumnCount(5)
         self.cartTable.setHorizontalHeaderLabels(["Item Name", "Price", "QTY", "Discount", "Total"])
         self.cartTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.cartTable.setStyleSheet("font-family: Monospace; font-size: 14px;")
+        self.cartTable.setStyleSheet("font-family: Monospace; font-size: 16px;")
+        self.cartTable.verticalHeader().setDefaultSectionSize(60)
+        self.cartTable.horizontalHeader().setFixedHeight(50)
         self.summaryLayout.addWidget(self.cartTable)
 
         # Summary Totals Area
@@ -89,6 +93,8 @@ class CashierWindow(QWidget):
         self.searchEdit = LineEdit()
         self.searchEdit.setPlaceholderText("SEARCH...")
         self.searchEdit.setFont(self.monoFont)
+        self.searchEdit.setFixedHeight(60)
+        self.searchEdit.setStyleSheet("font-size: 24px;")
         self.searchEdit.textChanged.connect(lambda: self.load_products())
         self.leftPanel.addWidget(self.searchEdit)
 
@@ -125,9 +131,10 @@ class CashierWindow(QWidget):
         self.customerLayout.addWidget(self.customerTitle)
 
         self.actionsGrid = QGridLayout()
+        self.actionsGrid.setSpacing(10)
         actions = ["DELETE ITEM", "SETTING", "PROMO", "DISCOUNT", "INHOUSE", "HOLD"]
         for i, act in enumerate(actions):
-            btn = PushButton(act)
+            btn = TouchButton(act)
             btn.setFont(self.monoFont)
             if act == "DELETE ITEM":
                 btn.clicked.connect(self.clear_cart)
@@ -146,12 +153,13 @@ class CashierWindow(QWidget):
         self.paymentGroup = QFrame()
         self.paymentGroup.setFrameShape(QFrame.Shape.Box)
         self.paymentLayout = QVBoxLayout(self.paymentGroup)
+        self.paymentLayout.setSpacing(10)
 
         paymentMethods = ["CASH", "CARD", "GIFT CARD", "LOYALTY"]
         for pay in paymentMethods:
-            btn = PushButton(pay)
+            btn = TouchButton(pay)
             btn.setFont(self.monoFont)
-            btn.setFixedHeight(60)
+            btn.setFixedHeight(70)
             if pay == "CASH":
                 btn.clicked.connect(self.checkout)
             self.paymentLayout.addWidget(btn)
@@ -181,9 +189,9 @@ class CashierWindow(QWidget):
             # Products for this category
             products = Product.get_all_products(search_query=search_query) # Intentional: same products for all
             for p in products:
-                btn = PushButton(f"{p['name']} {p['price']:.2f} - 12g")
+                btn = TouchButton(f"{p['name']} {p['price']:.2f} - 12g")
                 btn.setFont(self.monoFont)
-                btn.setStyleSheet("text-align: left; padding: 5px;")
+                btn.setStyleSheet("text-align: left; padding-left: 15px; font-size: 18px;")
                 btn.clicked.connect(lambda ch, prod=p: self.add_item(prod))
                 self.selectionLayout.addWidget(btn)
 
@@ -201,9 +209,9 @@ class CashierWindow(QWidget):
             {"name": "Pumpkin", "price": 50.00}
         ]
         for f in forgot_foods:
-            btn = PushButton(f"{f['name']} {f['price']:.2f} - 12g")
+            btn = TouchButton(f"{f['name']} {f['price']:.2f} - 12g")
             btn.setFont(self.monoFont)
-            btn.setStyleSheet("text-align: left; padding: 5px;")
+            btn.setStyleSheet("text-align: left; padding-left: 15px; font-size: 18px;")
             btn.clicked.connect(lambda ch, prod=f: self.add_item({
                 "code": "FORGOT", "name": f["name"], "price": f["price"]
             }))

@@ -44,7 +44,7 @@ class LauncherWindow(QWidget):
 
         self.cardsLayout = QHBoxLayout()
         self.adminCard = LauncherCard("الإدارة / Admin", FIF.APPLICATION, self)
-        self.cashierCard = LauncherCard("الكاشير / Cashier", FIF.SHOPPING_CART, self)
+        self.cashierCard = LauncherCard("الكاشير (قريباً) / Cashier (Soon)", FIF.SHOPPING_CART, self)
         self.settingsCard = LauncherCard("الإعدادات / Settings", FIF.SETTING, self)
 
         self.cardsLayout.addWidget(self.adminCard)

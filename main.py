@@ -1,5 +1,7 @@
 import sys
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication
+from qfluentwidgets import InfoBar, InfoBarPosition
 from src.modules.database import Database
 from src.ui.config_dialog import ConfigDialog
 from src.ui.launcher_window import LauncherWindow
@@ -44,18 +46,22 @@ class SupermarketApp:
         self.launcher.hide()
 
     def open_cashier(self):
-        db = Database()
-        success, _ = db.connect()
-        if not success:
-            self.open_settings()
-            return
-        if self.admin_win:
-            self.admin_win.close()
-        self.cashier_win = CashierWindow()
-        self.cashier_win.switchToAdmin.connect(self.open_admin)
-        self.cashier_win.returnToLauncher.connect(self.show_launcher)
-        self.cashier_win.show()
-        self.launcher.hide()
+        # Show Coming Soon message and do not open the window
+        parent = None
+        if self.launcher and self.launcher.isVisible():
+            parent = self.launcher
+        elif self.admin_win and self.admin_win.isVisible():
+            parent = self.admin_win
+
+        InfoBar.info(
+            title="قريباً / Coming Soon",
+            content="واجهة الكاشير قيد التطوير حالياً. / Cashier interface is under development.",
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            position=InfoBarPosition.TOP,
+            duration=3000,
+            parent=parent
+        )
 
     def open_settings(self):
         dialog = ConfigDialog()

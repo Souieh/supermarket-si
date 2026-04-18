@@ -1,10 +1,19 @@
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QWidget, QVBoxLayout
-from qfluentwidgets import (LineEdit, PasswordLineEdit, PrimaryPushButton,
-                            PushButton, FluentIcon as FIF, MessageBox,
-                            TitleLabel, BodyLabel, InfoBar, InfoBarPosition)
-from ..modules.user import User
+from PyQt6.QtWidgets import QVBoxLayout, QWidget
+from qfluentwidgets import BodyLabel
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import (
+    InfoBar,
+    InfoBarPosition,
+    LineEdit,
+    PasswordLineEdit,
+    PrimaryPushButton,
+    PushButton,
+    TitleLabel,
+)
+
 from ..modules.database import Database
+from ..modules.user import User
 
 
 class LoginWindow(QWidget):
@@ -74,10 +83,10 @@ class LoginWindow(QWidget):
 
         authenticated, role_or_msg = User.authenticate(username, password)
         if authenticated:
-            if role_or_msg == self.target_role:
-                self.loginSuccess.emit(role_or_msg)
-            else:
+            if self.target_role == "admin" and not role_or_msg == self.target_role:
                 self.show_error("فشل الدخول", f"هذا الحساب ليس {self.target_role}")
+            else:
+                self.loginSuccess.emit(role_or_msg)
         else:
             self.show_error("فشل الدخول", role_or_msg)
 
@@ -89,5 +98,5 @@ class LoginWindow(QWidget):
             isClosable=True,
             position=InfoBarPosition.TOP,
             duration=3000,
-            parent=self
+            parent=self,
         )

@@ -91,12 +91,3 @@ class LoginWindow(QWidget):
             duration=3000,
             parent=self
         )
-
-    def closeEvent(self, event):
-        w = MessageBox("تأكيد الخروج", "هل أنت متأكد من رغبتك في إغلاق البرنامج؟", self)
-        w.yesButton.setText("نعم")
-        w.cancelButton.setText("إلغاء")
-        if w.exec():
-            event.accept()
-        else:
-            event.ignore()

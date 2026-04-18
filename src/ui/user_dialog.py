@@ -33,6 +33,13 @@ class UserDialog(MessageBoxBase):
         if self.validate():
             super().accept()
 
+    def showEvent(self, event):
+        super().showEvent(event)
+        frame = self.frameGeometry()
+        screen = self.screen().availableGeometry().center()
+        frame.moveCenter(screen)
+        self.move(frame.topLeft())
+
     def get_data(self):
         return {
             "username": self.userEdit.text(),

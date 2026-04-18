@@ -30,6 +30,12 @@ class SupermarketApp:
         self.show_launcher()
         sys.exit(self.app.exec())
 
+    def center_window(self, window):
+        frame = window.frameGeometry()
+        center_point = self.app.primaryScreen().availableGeometry().center()
+        frame.moveCenter(center_point)
+        window.move(frame.topLeft())
+
     def show_launcher(self):
         if self.admin_win:
             self.admin_win.close()
@@ -40,6 +46,7 @@ class SupermarketApp:
         self.launcher.adminCard.clicked.connect(self.open_admin)
         self.launcher.cashierCard.clicked.connect(self.open_cashier)
         self.launcher.settingsCard.clicked.connect(self.open_settings)
+        self.center_window(self.launcher)
         self.launcher.show()
 
     def open_admin(self):
@@ -51,6 +58,7 @@ class SupermarketApp:
 
         self.login = LoginWindow(target_role="admin", title="دخول الإدارة")
         self.login.loginSuccess.connect(self._do_open_admin)
+        self.center_window(self.login)
         self.login.show()
         if self.launcher:
             self.launcher.hide()
@@ -63,6 +71,7 @@ class SupermarketApp:
         self.admin_win = AdminWindow()
         self.admin_win.switchToCashier.connect(self.open_cashier)
         self.admin_win.returnToLauncher.connect(self.show_launcher)
+        self.center_window(self.admin_win)
         self.admin_win.show()
 
     def open_cashier(self):
@@ -74,6 +83,7 @@ class SupermarketApp:
 
         self.login = LoginWindow(target_role="cashier", title="دخول الكاشير")
         self.login.loginSuccess.connect(self._do_open_cashier)
+        self.center_window(self.login)
         self.login.show()
         if self.launcher:
             self.launcher.hide()

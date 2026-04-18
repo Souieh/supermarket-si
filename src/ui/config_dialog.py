@@ -77,5 +77,12 @@ class ConfigDialog(QDialog):
             self.titleLabel.setText("خطأ في البيانات")
             self.titleLabel.setStyleSheet("color: red;")
 
+    def showEvent(self, event):
+        super().showEvent(event)
+        frame = self.frameGeometry()
+        screen = self.screen().availableGeometry().center()
+        frame.moveCenter(screen)
+        self.move(frame.topLeft())
+
     def exec(self):
         return super().exec() == QDialog.DialogCode.Accepted

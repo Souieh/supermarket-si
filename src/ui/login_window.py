@@ -9,9 +9,10 @@ from ..modules.database import Database
 class LoginWindow(QWidget):
     loginSuccess = pyqtSignal(str)  # Emits role
 
-    def __init__(self):
+    def __init__(self, target_role="admin", title="تسجيل دخول الإدارة / Admin Login"):
         super().__init__()
-        self.setWindowTitle("تسجيل الدخول / Login")
+        self.target_role = target_role
+        self.setWindowTitle(title)
         self.resize(400, 500)
         self.setStyleSheet("background-color: #f3f3f3;")
 
@@ -19,7 +20,7 @@ class LoginWindow(QWidget):
         self.layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.setSpacing(20)
 
-        self.titleLabel = TitleLabel("نظام السوبر ماركت", self)
+        self.titleLabel = TitleLabel(title, self)
         self.titleLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.subtitleLabel = BodyLabel("يرجى تسجيل الدخول للمتابعة / Please login to continue", self)
@@ -64,7 +65,10 @@ class LoginWindow(QWidget):
 
         authenticated, role_or_msg = User.authenticate(username, password)
         if authenticated:
-            self.loginSuccess.emit(role_or_msg)
+            if role_or_msg == self.target_role:
+                self.loginSuccess.emit(role_or_msg)
+            else:
+                self.show_error("فشل الدخول", f"هذا الحساب ليس {self.target_role}")
         else:
             self.show_error("فشل الدخول", role_or_msg)
 

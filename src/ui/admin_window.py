@@ -1,6 +1,6 @@
 from PyQt6.QtCore import pyqtSignal
 from qfluentwidgets import (FluentWindow, NavigationItemPosition,
-                            FluentIcon as FIF)
+                            FluentIcon as FIF, MessageBox)
 
 from .product_page import ProductPage
 from .sales_page import SalesPage
@@ -29,6 +29,14 @@ class AdminWindow(FluentWindow):
 
         self.init_navigation()
 
+    def show_about(self):
+        content = "نظام إدارة السوبر ماركت\nتم التطوير بواسطة Souieh\nGitHub: https://github.com/Souieh/supermarket-si"
+        w = MessageBox("عن النظام", content, self)
+        w.yesButton.setText("إغلاق")
+        w.cancelButton.hide()
+        if w.exec():
+            pass
+
     def init_navigation(self):
         self.addSubInterface(self.dashboardPage, FIF.HOME, "لوحة التحكم")
         self.addSubInterface(self.categoryPage, FIF.MENU, "الفئات")
@@ -52,6 +60,15 @@ class AdminWindow(FluentWindow):
             icon=FIF.HOME,
             text="القائمة الرئيسية",
             onClick=self.returnToLauncher.emit,
+            position=NavigationItemPosition.BOTTOM
+        )
+
+        # GitHub / About
+        self.navigationInterface.addItem(
+            routeKey="about",
+            icon=FIF.INFO,
+            text="عن النظام",
+            onClick=self.show_about,
             position=NavigationItemPosition.BOTTOM
         )
 

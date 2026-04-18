@@ -1,7 +1,7 @@
-from PyQt6.QtCore import Qt, QSize, pyqtSignal
+from PyQt6.QtCore import Qt, QSize, pyqtSignal, QUrl
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
 from qfluentwidgets import (PushButton, FluentIcon as FIF, TitleLabel,
-                            CardWidget, BodyLabel)
+                            CardWidget, BodyLabel, HyperlinkLabel)
 from ..modules.database import Database
 
 
@@ -19,7 +19,7 @@ class LauncherCard(CardWidget):
 
         self.titleLabel = BodyLabel(title, self)
         self.titleLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.titleLabel.setStyleSheet("font-size: 16px; font-weight: bold;")
+        self.titleLabel.setStyleSheet("font-size: 16px; font-weight: bold; color: black;")
 
         self.layout.addWidget(self.btn)
         self.layout.addWidget(self.titleLabel)
@@ -57,6 +57,10 @@ class LauncherWindow(QWidget):
         self.statusLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addSpacing(20)
         self.layout.addWidget(self.statusLabel)
+
+        self.layout.addStretch(1)
+        self.githubLabel = HyperlinkLabel(QUrl("https://github.com/Souieh/supermarket-si"), "GitHub: Souieh", self)
+        self.layout.addWidget(self.githubLabel, 0, Qt.AlignmentFlag.AlignCenter)
 
         self.check_connection()
 

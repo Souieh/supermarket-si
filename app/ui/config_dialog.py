@@ -1,5 +1,6 @@
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout
-from qfluentwidgets import SubtitleLabel, LineEdit, PrimaryPushButton, PushButton
+from PyQt6.QtWidgets import QDialog, QHBoxLayout, QVBoxLayout
+from qfluentwidgets import LineEdit, PrimaryPushButton, PushButton, SubtitleLabel
+
 from ..modules.database import Database
 
 
@@ -7,7 +8,7 @@ class ConfigDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("إعدادات قاعدة البيانات")
-        self.layout = QVBoxLayout(self)
+        self.mainLayout = QVBoxLayout(self)
 
         self.titleLabel = SubtitleLabel("إعدادات قاعدة البيانات", self)
         self.hostLineEdit = LineEdit(self)
@@ -47,28 +48,32 @@ class ConfigDialog(QDialog):
         self.buttonLayout.addWidget(self.yesButton)
         self.buttonLayout.addWidget(self.cancelButton)
 
-        self.layout.addWidget(self.titleLabel)
-        self.layout.addWidget(self.hostLineEdit)
-        self.layout.addWidget(self.portLineEdit)
-        self.layout.addWidget(self.dbLineEdit)
-        self.layout.addWidget(self.userLineEdit)
-        self.layout.addWidget(self.passLineEdit)
-        self.layout.addLayout(self.buttonLayout)
+        self.mainLayout.addWidget(self.titleLabel)
+        self.mainLayout.addWidget(self.hostLineEdit)
+        self.mainLayout.addWidget(self.portLineEdit)
+        self.mainLayout.addWidget(self.dbLineEdit)
+        self.mainLayout.addWidget(self.userLineEdit)
+        self.mainLayout.addWidget(self.passLineEdit)
+        self.mainLayout.addLayout(self.buttonLayout)
 
         self.setMinimumWidth(400)
         self.setStyleSheet("background-color: #f3f3f3;")
 
     def validate(self):
-        return (self.hostLineEdit.text() and
-                self.portLineEdit.text().isdigit() and
-                self.dbLineEdit.text())
+        return (
+            self.hostLineEdit.text()
+            and self.portLineEdit.text().isdigit()
+            and self.dbLineEdit.text()
+        )
 
     def get_config(self):
-        return (self.hostLineEdit.text(),
-                self.portLineEdit.text(),
-                self.dbLineEdit.text(),
-                self.userLineEdit.text(),
-                self.passLineEdit.text())
+        return (
+            self.hostLineEdit.text(),
+            self.portLineEdit.text(),
+            self.dbLineEdit.text(),
+            self.userLineEdit.text(),
+            self.passLineEdit.text(),
+        )
 
     def accept(self):
         if self.validate():
@@ -80,9 +85,11 @@ class ConfigDialog(QDialog):
     def showEvent(self, event):
         super().showEvent(event)
         frame = self.frameGeometry()
-        screen = self.screen().availableGeometry().center()
-        frame.moveCenter(screen)
-        self.move(frame.topLeft())
+        screen = self.screen()
+        if screen:
+            center_point = screen.availableGeometry().center()
+            frame.moveCenter(center_point)
+            self.move(frame.topLeft())
 
     def exec(self):
         return super().exec() == QDialog.DialogCode.Accepted

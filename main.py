@@ -1,13 +1,15 @@
 import sys
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QApplication
 from qfluentwidgets import InfoBar, InfoBarPosition
-from src.modules.database import Database
-from src.ui.config_dialog import ConfigDialog
-from src.ui.launcher_window import LauncherWindow
-from src.ui.admin_window import AdminWindow
-from src.ui.login_window import LoginWindow
+
+from app.modules.database import Database
+from app.ui.admin.admin_window import AdminWindow
+from app.ui.config_dialog import ConfigDialog
+from app.ui.launcher_window import LauncherWindow
+from app.ui.login_window import LoginWindow
 
 
 class SupermarketApp:
@@ -32,8 +34,11 @@ class SupermarketApp:
 
     def center_window(self, window):
         frame = window.frameGeometry()
-        center_point = self.app.primaryScreen().availableGeometry().center()
-        frame.moveCenter(center_point)
+        center_point = self.app.primaryScreen()
+        if center_point is None:
+            raise Exception("No primary screen found")
+        point = center_point.availableGeometry().center()
+        frame.moveCenter(point)
         window.move(frame.topLeft())
 
     def show_launcher(self):
@@ -101,7 +106,7 @@ class SupermarketApp:
             isClosable=True,
             position=InfoBarPosition.TOP,
             duration=3000,
-            parent=None
+            parent=None,
         )
         self.show_launcher()
 

@@ -1,9 +1,15 @@
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                             QTableWidgetItem, QHeaderView)
-from qfluentwidgets import (SubtitleLabel, TableWidget, PushButton,
-                            FluentIcon as FIF, InfoBar, MessageBox)
-from ..modules.user import User
-from .user_dialog import UserDialog
+from PyQt6.QtWidgets import (
+    QHBoxLayout,
+    QHeaderView,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import InfoBar, MessageBox, PushButton, SubtitleLabel, TableWidget
+
+from ....modules.user import User
+from ..components.user_dialog import UserDialog
 
 
 class UserPage(QWidget):
@@ -32,7 +38,9 @@ class UserPage(QWidget):
         self.table = TableWidget(self)
         self.table.setColumnCount(2)
         self.table.setHorizontalHeaderLabels(["اسم المستخدم", "الصلاحية"])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
 
         self.layout.addWidget(self.titleLabel)
         self.layout.addLayout(self.actionBar)
@@ -53,7 +61,9 @@ class UserPage(QWidget):
         w = UserDialog(self.window())
         if w.exec():
             data = w.get_data()
-            success, msg = User.create_user(data["username"], data["password"], data["role"])
+            success, msg = User.create_user(
+                data["username"], data["password"], data["role"]
+            )
             if success:
                 self.load_users()
                 InfoBar.success("تم", msg, parent=self)
@@ -84,7 +94,9 @@ class UserPage(QWidget):
             InfoBar.warning("تنبيه", "لا يمكن حذف مستخدم الأدمن الرئيسي", parent=self)
             return
 
-        w = MessageBox("تأكيد الحذف", f"هل أنت متأكد من حذف المستخدم {username}؟", self.window())
+        w = MessageBox(
+            "تأكيد الحذف", f"هل أنت متأكد من حذف المستخدم {username}؟", self.window()
+        )
         w.yesButton.setText("نعم")
         w.cancelButton.setText("إلغاء")
 

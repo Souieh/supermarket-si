@@ -1,9 +1,9 @@
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QTableWidgetItem,
-                             QHeaderView)
-from qfluentwidgets import (SubtitleLabel, TableWidget, PushButton,
-                            FluentIcon as FIF, InfoBar)
-from ..modules.purchase import Purchase
-from .purchase_dialog import PurchaseDialog
+from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem, QVBoxLayout, QWidget
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import InfoBar, PushButton, SubtitleLabel, TableWidget
+
+from ....modules.purchase import Purchase
+from ..components.purchase_dialog import PurchaseDialog
 
 
 class PurchasePage(QWidget):
@@ -19,10 +19,12 @@ class PurchasePage(QWidget):
 
         self.table = TableWidget(self)
         self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels([
-            "التاريخ", "المورد", "المنتجات", "الكمية", "التكلفة"
-        ])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table.setHorizontalHeaderLabels(
+            ["التاريخ", "المورد", "المنتجات", "الكمية", "التكلفة"]
+        )
+        self.table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
 
         self.layout.addWidget(self.titleLabel)
         self.layout.addWidget(self.addButton)
@@ -53,6 +55,8 @@ class PurchasePage(QWidget):
             pur = Purchase(data["items"], data["total_cost"], data["supplier"])
             if pur.process_purchase():
                 self.load_purchases()
-                InfoBar.success("تم", "تم تسجيل المشتريات وتحديث المخزون بنجاح", parent=self)
+                InfoBar.success(
+                    "تم", "تم تسجيل المشتريات وتحديث المخزون بنجاح", parent=self
+                )
             else:
                 InfoBar.error("خطأ", "فشل في تسجيل العملية", parent=self)

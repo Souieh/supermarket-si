@@ -1,9 +1,22 @@
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                             QTableWidgetItem, QHeaderView)
-from qfluentwidgets import (SubtitleLabel, TableWidget, LineEdit, PushButton,
-                            FluentIcon as FIF, InfoBar, MessageBox)
-from ..modules.product import Product
-from .product_dialog import ProductDialog
+from PyQt6.QtWidgets import (
+    QHBoxLayout,
+    QHeaderView,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import (
+    InfoBar,
+    LineEdit,
+    MessageBox,
+    PushButton,
+    SubtitleLabel,
+    TableWidget,
+)
+
+from ....modules.product import Product
+from ..components.product_dialog import ProductDialog
 
 
 class ProductPage(QWidget):
@@ -37,11 +50,12 @@ class ProductPage(QWidget):
         # Table
         self.table = TableWidget(self)
         self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels([
-            "الرمز", "الاسم", "الفئة",
-            "السعر", "الكمية", "الوصف"
-        ])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table.setHorizontalHeaderLabels(
+            ["الرمز", "الاسم", "الفئة", "السعر", "الكمية", "الوصف"]
+        )
+        self.table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
 
         self.layout.addWidget(self.titleLabel)
         self.layout.addLayout(self.actionBar)
@@ -94,7 +108,9 @@ class ProductPage(QWidget):
             return
         code = self.table.item(row, 0).text()
 
-        w = MessageBox("تأكيد الحذف", f"هل أنت متأكد من حذف المنتج {code}؟", self.window())
+        w = MessageBox(
+            "تأكيد الحذف", f"هل أنت متأكد من حذف المنتج {code}؟", self.window()
+        )
         w.yesButton.setText("نعم")
         w.cancelButton.setText("إلغاء")
 

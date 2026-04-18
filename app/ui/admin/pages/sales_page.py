@@ -2,9 +2,9 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
                              QTableWidgetItem, QHeaderView)
 from qfluentwidgets import (SubtitleLabel, TableWidget, LineEdit, PushButton,
                             FluentIcon as FIF, InfoBar, StrongBodyLabel)
-from ..modules.product import Product
-from ..modules.sale import Sale
-from ..modules.receipt import Receipt
+from ....modules.product import Product
+from ....modules.sale import Sale
+from ....modules.receipt import Receipt
 
 
 class SalesPage(QWidget):

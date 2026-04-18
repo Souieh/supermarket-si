@@ -1,20 +1,20 @@
-import unittest
-from unittest.mock import MagicMock, patch
-from datetime import datetime
 import os
 import sys
+import unittest
+from datetime import datetime
+from unittest.mock import MagicMock, patch
 
 # Add src to path
-sys.path.append(os.path.join(os.getcwd(), 'src'))
+sys.path.append(os.path.join(os.getcwd(), "src"))
 
 # Mock the Database class BEFORE importing Sale
-with patch('modules.database.Database') as MockDB:
-    from modules.product import Product
-    from modules.sale import Sale
-    from modules.receipt import Receipt
+with patch("modules.database.Database") as MockDB:
+    from app.modules.product import Product
+    from app.modules.receipt import Receipt
+    from app.modules.sale import Sale
+
 
 class TestSupermarketLogic(unittest.TestCase):
-
     def test_product_to_dict(self):
         p = Product("001", "Test Product", "Category", 10.5, 100, "Description")
         d = p.to_dict()
@@ -22,7 +22,7 @@ class TestSupermarketLogic(unittest.TestCase):
         self.assertEqual(d["name"], "Test Product")
         self.assertEqual(d["price"], 10.5)
 
-    @patch('modules.sale.Database')
+    @patch("modules.sale.Database")
     def test_sale_total(self, MockDB):
         # Setup mock database instance
         mock_db_instance = MockDB.return_value
@@ -32,7 +32,7 @@ class TestSupermarketLogic(unittest.TestCase):
 
         items = [
             {"code": "001", "name": "P1", "price": 10.0, "quantity": 2},
-            {"code": "002", "name": "P2", "price": 5.0, "quantity": 1}
+            {"code": "002", "name": "P2", "price": 5.0, "quantity": 1},
         ]
         sale = Sale(items, 25.0)
         self.assertEqual(sale.total_amount, 25.0)
@@ -44,19 +44,20 @@ class TestSupermarketLogic(unittest.TestCase):
             "receipt_id": "9999",
             "timestamp": datetime.now(),
             "items": [{"name": "Test Item", "price": 10.0, "quantity": 2}],
-            "total_amount": 20.0
+            "total_amount": 20.0,
         }
-        if not os.path.exists('receipts'):
-            os.makedirs('receipts')
+        if not os.path.exists("receipts"):
+            os.makedirs("receipts")
 
         filename = Receipt.generate(sale_data)
         self.assertTrue(os.path.exists(filename))
-        with open(filename, 'r', encoding='utf-8') as f:
+        with open(filename, "r", encoding="utf-8") as f:
             content = f.read()
             self.assertIn("9999", content)
             self.assertIn("Test Item", content)
         if os.path.exists(filename):
             os.remove(filename)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

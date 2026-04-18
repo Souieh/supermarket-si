@@ -1,15 +1,23 @@
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
-                             QTableWidgetItem, QHeaderView)
-from qfluentwidgets import (SubtitleLabel, TableWidget, LineEdit, PushButton,
-                            FluentIcon as FIF, InfoBar)
-from ..modules.category import Category
+from PyQt6.QtWidgets import (
+    QHBoxLayout,
+    QHeaderView,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import InfoBar, LineEdit, PushButton, SubtitleLabel, TableWidget
+
+from ....modules.category import Category
 
 
 class CategoryPage(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("CategoryPage")
-        self.layout = QVBoxLayout(self)
+
+        # Fix 1: Rename 'layout' to avoid conflict with QWidget's layout() method
+        self.mainLayout = QVBoxLayout(self)
 
         self.titleLabel = SubtitleLabel("إدارة الفئات", self)
 
@@ -25,15 +33,20 @@ class CategoryPage(QWidget):
         self.table = TableWidget(self)
         self.table.setColumnCount(1)
         self.table.setHorizontalHeaderLabels(["الفئة"])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+
+        # Fix 2: Safe access for horizontalHeader()
+        header = self.table.horizontalHeader()
+        if header is not None:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
         self.deleteButton = PushButton(FIF.DELETE, "حذف الفئة المختارة", self)
         self.deleteButton.clicked.connect(self.delete_category)
 
-        self.layout.addWidget(self.titleLabel)
-        self.layout.addLayout(self.actionBar)
-        self.layout.addWidget(self.table)
-        self.layout.addWidget(self.deleteButton)
+        # Now use self.mainLayout instead of self.layout
+        self.mainLayout.addWidget(self.titleLabel)
+        self.mainLayout.addLayout(self.actionBar)
+        self.mainLayout.addWidget(self.table)
+        self.mainLayout.addWidget(self.deleteButton)
 
         self.load_categories()
 
@@ -60,7 +73,11 @@ class CategoryPage(QWidget):
         row = self.table.currentRow()
         if row < 0:
             return
-        name = self.table.item(row, 0).text()
+        # Fix 3: Check that item is not None before accessing .text()
+        item = self.table.item(row, 0)
+        if item is None:
+            return
+        name = item.text()
         if Category.delete_category(name):
             self.load_categories()
             InfoBar.success("تم", "تم حذف الفئة", parent=self)

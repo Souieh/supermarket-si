@@ -1,13 +1,13 @@
 from PyQt6.QtCore import pyqtSignal
-from qfluentwidgets import (FluentWindow, NavigationItemPosition,
-                            FluentIcon as FIF, MessageBox)
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import FluentWindow, MessageBox, NavigationItemPosition
 
-from .product_page import ProductPage
-from .sales_page import SalesPage
-from .dashboard_page import DashboardPage
-from .category_page import CategoryPage
-from .purchase_page import PurchasePage
-from .user_page import UserPage
+from .pages.category_page import CategoryPage
+from .pages.dashboard_page import DashboardPage
+from .pages.product_page import ProductPage
+from .pages.purchase_page import PurchasePage
+from .pages.sales_page import SalesPage
+from .pages.user_page import UserPage
 
 
 class AdminWindow(FluentWindow):
@@ -51,7 +51,7 @@ class AdminWindow(FluentWindow):
             icon=FIF.SHOPPING_CART,
             text="واجهة الكاشير (قريباً)",
             onClick=self.switchToCashier.emit,
-            position=NavigationItemPosition.BOTTOM
+            position=NavigationItemPosition.BOTTOM,
         )
 
         # Return to Launcher
@@ -60,7 +60,7 @@ class AdminWindow(FluentWindow):
             icon=FIF.HOME,
             text="القائمة الرئيسية",
             onClick=self.returnToLauncher.emit,
-            position=NavigationItemPosition.BOTTOM
+            position=NavigationItemPosition.BOTTOM,
         )
 
         # GitHub / About
@@ -69,7 +69,7 @@ class AdminWindow(FluentWindow):
             icon=FIF.INFO,
             text="عن النظام",
             onClick=self.show_about,
-            position=NavigationItemPosition.BOTTOM
+            position=NavigationItemPosition.BOTTOM,
         )
 
         self.navigationInterface.setExpandWidth(280)

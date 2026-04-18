@@ -57,9 +57,11 @@ class ProductDialog(MessageBoxBase):
     def showEvent(self, event):
         super().showEvent(event)
         frame = self.frameGeometry()
-        screen = self.screen().availableGeometry().center()
-        frame.moveCenter(screen)
-        self.move(frame.topLeft())
+        screen = self.screen()
+        if screen:
+            center = screen.availableGeometry().center()
+            frame.moveCenter(center)
+            self.move(frame.topLeft())
 
     def get_data(self):
         return {

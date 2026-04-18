@@ -63,6 +63,7 @@ class SupermarketApp:
 
         self.login = LoginWindow(target_role="admin", title="دخول الإدارة")
         self.login.loginSuccess.connect(self._do_open_admin)
+        self.login.returnToLauncher.connect(self.show_launcher)
         self.center_window(self.login)
         self.login.show()
         if self.launcher:
@@ -88,6 +89,7 @@ class SupermarketApp:
 
         self.login = LoginWindow(target_role="cashier", title="دخول الكاشير")
         self.login.loginSuccess.connect(self._do_open_cashier)
+        self.login.returnToLauncher.connect(self.show_launcher)
         self.center_window(self.login)
         self.login.show()
         if self.launcher:
@@ -98,17 +100,15 @@ class SupermarketApp:
     def _do_open_cashier(self, role):
         if self.login:
             self.login.close()
-        # Show Coming Soon message and do not open the window
-        InfoBar.info(
-            title="قريباً",
-            content="واجهة الكاشير قيد التطوير حالياً.",
-            orient=Qt.Orientation.Horizontal,
-            isClosable=True,
-            position=InfoBarPosition.TOP,
-            duration=3000,
-            parent=None,
-        )
-        self.show_launcher()
+        if self.admin_win:
+            self.admin_win.close()
+
+        from app.ui.cashier.cashier_window import CashierWindow
+        self.cashier_win = CashierWindow()
+        self.cashier_win.returnToLauncher.connect(self.show_launcher)
+        self.cashier_win.switchToAdmin.connect(self.open_admin)
+        # self.center_window(self.cashier_win) # Cashier window is maximized
+        self.cashier_win.show()
 
     def open_settings(self):
         dialog = ConfigDialog()

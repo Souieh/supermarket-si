@@ -23,7 +23,7 @@ class ProductPage(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("ProductPage")
-        self.layout = QVBoxLayout(self)
+        self.mainLayout = QVBoxLayout(self)
 
         self.titleLabel = SubtitleLabel("إدارة المنتجات", self)
 
@@ -53,13 +53,13 @@ class ProductPage(QWidget):
         self.table.setHorizontalHeaderLabels(
             ["الرمز", "الاسم", "الفئة", "السعر", "الكمية", "الوصف"]
         )
-        self.table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.Stretch
-        )
+        header = self.table.horizontalHeader()
+        if header is not None:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
-        self.layout.addWidget(self.titleLabel)
-        self.layout.addLayout(self.actionBar)
-        self.layout.addWidget(self.table)
+        self.mainLayout.addWidget(self.titleLabel)
+        self.mainLayout.addLayout(self.actionBar)
+        self.mainLayout.addWidget(self.table)
 
         self.load_products()
 
@@ -92,7 +92,10 @@ class ProductPage(QWidget):
         row = self.table.currentRow()
         if row < 0:
             return
-        code = self.table.item(row, 0).text()
+        item = self.table.item(row, 0)
+        if item is None:
+            return
+        code = item.text()
         product = Product.get_product(code)
 
         w = ProductDialog(self.window(), product)
@@ -106,7 +109,10 @@ class ProductPage(QWidget):
         row = self.table.currentRow()
         if row < 0:
             return
-        code = self.table.item(row, 0).text()
+        item = self.table.item(row, 0)
+        if item is None:
+            return
+        code = item.text()
 
         w = MessageBox(
             "تأكيد الحذف", f"هل أنت متأكد من حذف المنتج {code}؟", self.window()

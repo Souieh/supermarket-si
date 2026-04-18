@@ -10,7 +10,7 @@ class PurchasePage(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("PurchasePage")
-        self.layout = QVBoxLayout(self)
+        self.mainLayout = QVBoxLayout(self)
 
         self.titleLabel = SubtitleLabel("سجل المشتريات", self)
 
@@ -22,13 +22,13 @@ class PurchasePage(QWidget):
         self.table.setHorizontalHeaderLabels(
             ["التاريخ", "المورد", "المنتجات", "الكمية", "التكلفة"]
         )
-        self.table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.Stretch
-        )
+        header = self.table.horizontalHeader()
+        if header is not None:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
-        self.layout.addWidget(self.titleLabel)
-        self.layout.addWidget(self.addButton)
-        self.layout.addWidget(self.table)
+        self.mainLayout.addWidget(self.titleLabel)
+        self.mainLayout.addWidget(self.addButton)
+        self.mainLayout.addWidget(self.table)
 
         self.load_purchases()
 

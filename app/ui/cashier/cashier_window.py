@@ -1,3 +1,6 @@
+import os
+import sys
+
 from PyQt6.QtCore import QSize, Qt, pyqtSignal
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
@@ -13,6 +16,7 @@ from PyQt6.QtWidgets import (
 )
 from qfluentwidgets import InfoBar, LineEdit, PushButton, TableWidget
 
+from ...modules.category import Category
 from ...modules.product import Product
 from ...modules.receipt import Receipt
 from ...modules.sale import Sale
@@ -135,6 +139,7 @@ class CashierWindow(QWidget):
         self.codeEdit.setFixedHeight(60)
         self.codeEdit.setFont(self.monoFont)
         self.codeEdit.setStyleSheet("font-size: 24px;")
+        self.codeEdit.returnPressed.connect(self.add_by_code)
         self.leftPanel.addWidget(self.codeEdit)
 
         # Scroll Area for Categories and Products
@@ -239,9 +244,10 @@ class CashierWindow(QWidget):
 
         search_query = self.searchEdit.text()
 
-        # In this specific UI, we list categories and products under them
-        categories = ["VEGETABLE", "GROCERY", "FRUITS"]
-        for cat_name in categories:
+        # Fetch actual categories from database
+        categories = Category.get_all_categories()
+        for cat in categories:
+            cat_name = cat["name"]
             header = QLabel(cat_name)
             header.setStyleSheet(
                 "font-weight: bold; font-size: 16px; margin-top: 10px;"
@@ -250,9 +256,9 @@ class CashierWindow(QWidget):
             self.selectionLayout.addWidget(header)
 
             # Products for this category
-            products = Product.get_all_products(search_query=search_query)
+            products = Product.get_all_products(search_query=search_query, category=cat_name)
             for p in products:
-                btn = TouchButton(f"{p['name']} {p['price']:.2f} - 12g")
+                btn = TouchButton(f"{p['name']} {p['price']:.2f}")
                 btn.setFont(self.monoFont)
                 btn.setStyleSheet(
                     "text-align: left; padding-left: 15px; font-size: 18px;"
@@ -372,8 +378,21 @@ class CashierWindow(QWidget):
         sale = Sale(self.cart_items, total)
         try:
             receipt_id = sale.process_sale()
-            Receipt.generate(sale.to_dict())
+            filename = Receipt.generate(sale.to_dict())
             InfoBar.success("تم", f"تم البيع بنجاح. فاتورة: {receipt_id}", parent=self)
             self.clear_cart()
+
+            # Attempt to open the receipt file
+            try:
+                if sys.platform == "win32":
+                    os.startfile(filename)
+                elif sys.platform == "darwin":
+                    import subprocess
+                    subprocess.run(["open", filename])
+                else:
+                    import subprocess
+                    subprocess.run(["xdg-open", filename])
+            except Exception:
+                pass
         except Exception as e:
             InfoBar.error("خطأ", str(e), parent=self)

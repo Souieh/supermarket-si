@@ -4,11 +4,12 @@ import unittest
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
-# Add src to path
-sys.path.append(os.path.join(os.getcwd(), "src"))
+# Add project root to path
+sys.path.append(os.getcwd())
 
 # Mock the Database class BEFORE importing Sale
-with patch("modules.database.Database") as MockDB:
+from app.modules import database
+with patch.object(database, "Database") as MockDB:
     from app.modules.product import Product
     from app.modules.receipt import Receipt
     from app.modules.sale import Sale
@@ -22,7 +23,7 @@ class TestSupermarketLogic(unittest.TestCase):
         self.assertEqual(d["name"], "Test Product")
         self.assertEqual(d["price"], 10.5)
 
-    @patch("modules.sale.Database")
+    @patch("app.modules.sale.Database")
     def test_sale_total(self, MockDB):
         # Setup mock database instance
         mock_db_instance = MockDB.return_value

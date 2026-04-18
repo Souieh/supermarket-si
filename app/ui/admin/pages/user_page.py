@@ -16,7 +16,7 @@ class UserPage(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("UserPage")
-        self.layout = QVBoxLayout(self)
+        self.mainLayout = QVBoxLayout(self)
 
         self.titleLabel = SubtitleLabel("إدارة المستخدمين", self)
 
@@ -38,13 +38,13 @@ class UserPage(QWidget):
         self.table = TableWidget(self)
         self.table.setColumnCount(2)
         self.table.setHorizontalHeaderLabels(["اسم المستخدم", "الصلاحية"])
-        self.table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeMode.Stretch
-        )
+        header = self.table.horizontalHeader()
+        if header is not None:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
-        self.layout.addWidget(self.titleLabel)
-        self.layout.addLayout(self.actionBar)
-        self.layout.addWidget(self.table)
+        self.mainLayout.addWidget(self.titleLabel)
+        self.mainLayout.addLayout(self.actionBar)
+        self.mainLayout.addWidget(self.table)
 
         self.load_users()
 
@@ -74,8 +74,12 @@ class UserPage(QWidget):
         row = self.table.currentRow()
         if row < 0:
             return
-        username = self.table.item(row, 0).text()
-        role = self.table.item(row, 1).text()
+        item_user = self.table.item(row, 0)
+        item_role = self.table.item(row, 1)
+        if item_user is None or item_role is None:
+            return
+        username = item_user.text()
+        role = item_role.text()
 
         w = UserDialog(self.window(), {"username": username, "role": role})
         if w.exec():
@@ -88,7 +92,10 @@ class UserPage(QWidget):
         row = self.table.currentRow()
         if row < 0:
             return
-        username = self.table.item(row, 0).text()
+        item = self.table.item(row, 0)
+        if item is None:
+            return
+        username = item.text()
 
         if username == "admin":
             InfoBar.warning("تنبيه", "لا يمكن حذف مستخدم الأدمن الرئيسي", parent=self)

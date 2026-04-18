@@ -11,7 +11,7 @@ class SalesPage(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("SalesPage")
-        self.layout = QVBoxLayout(self)
+        self.mainLayout = QVBoxLayout(self)
 
         self.titleLabel = SubtitleLabel("معالجة المبيعات", self)
 
@@ -33,7 +33,9 @@ class SalesPage(QWidget):
         self.table = TableWidget(self)
         self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(["المنتج", "السعر", "الكمية", "المجموع"])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        header = self.table.horizontalHeader()
+        if header is not None:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
         # Bottom Bar
         self.bottomBar = QHBoxLayout()
@@ -45,10 +47,10 @@ class SalesPage(QWidget):
         self.bottomBar.addStretch(1)
         self.bottomBar.addWidget(self.checkoutButton)
 
-        self.layout.addWidget(self.titleLabel)
-        self.layout.addLayout(self.selectionLayout)
-        self.layout.addWidget(self.table)
-        self.layout.addLayout(self.bottomBar)
+        self.mainLayout.addWidget(self.titleLabel)
+        self.mainLayout.addLayout(self.selectionLayout)
+        self.mainLayout.addWidget(self.table)
+        self.mainLayout.addLayout(self.bottomBar)
 
         self.cart_items = []
 

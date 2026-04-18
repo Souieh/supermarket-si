@@ -1,6 +1,7 @@
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from qfluentwidgets import (LineEdit, PasswordLineEdit, PrimaryPushButton,
+                            PushButton, FluentIcon as FIF, MessageBox,
                             TitleLabel, BodyLabel, InfoBar, InfoBarPosition)
 from ..modules.user import User
 from ..modules.database import Database
@@ -8,6 +9,7 @@ from ..modules.database import Database
 
 class LoginWindow(QWidget):
     loginSuccess = pyqtSignal(str)  # Emits role
+    returnToLauncher = pyqtSignal()
 
     def __init__(self, target_role="admin", title="تسجيل دخول الإدارة"):
         super().__init__()
@@ -41,12 +43,19 @@ class LoginWindow(QWidget):
         self.loginBtn.setFixedHeight(45)
         self.loginBtn.clicked.connect(self.do_login)
 
+        self.homeBtn = PushButton(FIF.HOME, "العودة للرئيسية", self)
+        self.homeBtn.setFixedWidth(300)
+        self.homeBtn.setFixedHeight(40)
+        self.homeBtn.clicked.connect(self.returnToLauncher.emit)
+
         self.mainLayout.addWidget(self.titleLabel)
         self.mainLayout.addWidget(self.subtitleLabel)
         self.mainLayout.addSpacing(20)
         self.mainLayout.addWidget(self.userEdit)
         self.mainLayout.addWidget(self.passEdit)
         self.mainLayout.addWidget(self.loginBtn)
+        self.mainLayout.addSpacing(10)
+        self.mainLayout.addWidget(self.homeBtn)
 
     def do_login(self):
         username = self.userEdit.text()
@@ -82,3 +91,12 @@ class LoginWindow(QWidget):
             duration=3000,
             parent=self
         )
+
+    def closeEvent(self, event):
+        w = MessageBox("تأكيد الخروج", "هل أنت متأكد من رغبتك في إغلاق البرنامج؟", self)
+        w.yesButton.setText("نعم")
+        w.cancelButton.setText("إلغاء")
+        if w.exec():
+            event.accept()
+        else:
+            event.ignore()

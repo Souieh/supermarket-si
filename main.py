@@ -63,6 +63,7 @@ class SupermarketApp:
 
         self.login = LoginWindow(target_role="admin", title="دخول الإدارة")
         self.login.loginSuccess.connect(self._do_open_admin)
+        self.login.returnToLauncher.connect(self.show_launcher)
         self.center_window(self.login)
         self.login.show()
         if self.launcher:
@@ -88,6 +89,7 @@ class SupermarketApp:
 
         self.login = LoginWindow(target_role="cashier", title="دخول الكاشير")
         self.login.loginSuccess.connect(self._do_open_cashier)
+        self.login.returnToLauncher.connect(self.show_launcher)
         self.center_window(self.login)
         self.login.show()
         if self.launcher:

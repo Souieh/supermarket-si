@@ -1,7 +1,7 @@
 from PyQt6.QtCore import Qt, QSize, pyqtSignal, QUrl
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
 from qfluentwidgets import (PushButton, FluentIcon as FIF, TitleLabel,
-                            CardWidget, BodyLabel, HyperlinkLabel)
+                            CardWidget, BodyLabel, HyperlinkLabel, MessageBox)
 from ..modules.database import Database
 
 
@@ -73,3 +73,12 @@ class LauncherWindow(QWidget):
         else:
             self.statusLabel.setText(f"خطأ في الاتصال: {message}")
             self.statusLabel.setStyleSheet("color: red; font-weight: bold;")
+
+    def closeEvent(self, event):
+        w = MessageBox("تأكيد الخروج", "هل أنت متأكد من رغبتك في إغلاق البرنامج؟", self)
+        w.yesButton.setText("نعم")
+        w.cancelButton.setText("إلغاء")
+        if w.exec():
+            event.accept()
+        else:
+            event.ignore()

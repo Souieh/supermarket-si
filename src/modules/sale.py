@@ -53,18 +53,27 @@ class Sale:
         db = Database()
         products_col = db.get_collection("products")
         sales_col = db.get_collection("sales")
+        categories_col = db.get_collection("categories")
+        purchases_col = db.get_collection("purchases")
 
         total_products = products_col.count_documents({})
         out_of_stock = products_col.count_documents({"quantity": {"$lte": 0}})
+        total_categories = categories_col.count_documents({})
 
         # Daily revenue
         today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         daily_sales = list(sales_col.find({"timestamp": {"$gte": today}}))
         daily_revenue = sum(sale["total_amount"] for sale in daily_sales)
 
+        # Total Purchases
+        purchases = list(purchases_col.find())
+        total_purchases = sum(p.get("total_cost", 0) for p in purchases)
+
         return {
             "total_products": total_products,
             "out_of_stock": out_of_stock,
+            "total_categories": total_categories,
             "daily_revenue": daily_revenue,
-            "total_sales": sales_col.count_documents({})
+            "total_sales": sales_col.count_documents({}),
+            "total_purchases": total_purchases
         }

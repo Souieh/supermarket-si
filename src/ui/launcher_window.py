@@ -28,15 +28,13 @@ class LauncherCard(CardWidget):
 
         self.btn.clicked.connect(self.clicked.emit)
 
-    def mouseReleaseEvent(self, event):
-        super().mouseReleaseEvent(event)
-        self.clicked.emit()
 
 class LauncherWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Supermarket Launcher - نظام السوبر ماركت")
         self.resize(800, 500)
+        self.setStyleSheet("background-color: #f3f3f3;")
         self.layout = QVBoxLayout(self)
         self.layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -47,7 +45,7 @@ class LauncherWindow(QWidget):
 
         self.cardsLayout = QHBoxLayout()
         self.adminCard = LauncherCard("الإدارة / Admin", FIF.APPLICATION, self)
-        self.cashierCard = LauncherCard("الكاشير / Cashier", FIF.SHOPPING_CART, self)
+        self.cashierCard = LauncherCard("الكاشير (قريباً) / Cashier (Soon)", FIF.SHOPPING_CART, self)
         self.settingsCard = LauncherCard("الإعدادات / Settings", FIF.SETTING, self)
 
         self.cardsLayout.addWidget(self.adminCard)

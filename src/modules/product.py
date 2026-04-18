@@ -44,19 +44,20 @@ class Product:
         return collection.find_one({"code": code})
 
     @staticmethod
-    def get_all_products(search_query=None):
+    def get_all_products(search_query=None, category=None):
         db = Database()
         collection = db.get_collection("products")
+        query = {}
         if search_query:
-            query = {
-                "$or": [
-                    {"code": {"$regex": search_query, "$options": "i"}},
-                    {"name": {"$regex": search_query, "$options": "i"}},
-                    {"category": {"$regex": search_query, "$options": "i"}}
-                ]
-            }
-            return list(collection.find(query))
-        return list(collection.find())
+            query["$or"] = [
+                {"code": {"$regex": search_query, "$options": "i"}},
+                {"name": {"$regex": search_query, "$options": "i"}},
+                {"category": {"$regex": search_query, "$options": "i"}}
+            ]
+        if category:
+            query["category"] = category
+
+        return list(collection.find(query))
 
     @staticmethod
     def update_stock(code, quantity_change, session=None):

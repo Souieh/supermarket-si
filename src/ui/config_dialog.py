@@ -14,10 +14,15 @@ class ConfigDialog(QDialog):
         self.hostLineEdit = LineEdit(self)
         self.portLineEdit = LineEdit(self)
         self.dbLineEdit = LineEdit(self)
+        self.userLineEdit = LineEdit(self)
+        self.passLineEdit = LineEdit(self)
+        self.passLineEdit.setEchoMode(LineEdit.EchoMode.Password)
 
         self.hostLineEdit.setPlaceholderText("المضيف / Host (e.g. localhost)")
         self.portLineEdit.setPlaceholderText("المنفذ / Port (e.g. 27017)")
         self.dbLineEdit.setPlaceholderText("اسم قاعدة البيانات / Database Name")
+        self.userLineEdit.setPlaceholderText("اسم المستخدم / Username (Optional)")
+        self.passLineEdit.setPlaceholderText("كلمة المرور / Password (Optional)")
 
         # Load existing config if any
         db = Database()
@@ -25,6 +30,8 @@ class ConfigDialog(QDialog):
             self.hostLineEdit.setText(db.config.get("host", "localhost"))
             self.portLineEdit.setText(str(db.config.get("port", 27017)))
             self.dbLineEdit.setText(db.config.get("db_name", "supermarket"))
+            self.userLineEdit.setText(db.config.get("username", ""))
+            self.passLineEdit.setText(db.config.get("password", ""))
         else:
             self.hostLineEdit.setText("localhost")
             self.portLineEdit.setText("27017")
@@ -45,9 +52,12 @@ class ConfigDialog(QDialog):
         self.layout.addWidget(self.hostLineEdit)
         self.layout.addWidget(self.portLineEdit)
         self.layout.addWidget(self.dbLineEdit)
+        self.layout.addWidget(self.userLineEdit)
+        self.layout.addWidget(self.passLineEdit)
         self.layout.addLayout(self.buttonLayout)
 
         self.setMinimumWidth(400)
+        self.setStyleSheet("background-color: #f3f3f3;")
 
     def validate(self):
         return (self.hostLineEdit.text() and
@@ -57,7 +67,9 @@ class ConfigDialog(QDialog):
     def get_config(self):
         return (self.hostLineEdit.text(),
                 self.portLineEdit.text(),
-                self.dbLineEdit.text())
+                self.dbLineEdit.text(),
+                self.userLineEdit.text(),
+                self.passLineEdit.text())
 
     def accept(self):
         if self.validate():

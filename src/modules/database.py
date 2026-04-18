@@ -21,8 +21,14 @@ class Database:
                 return json.load(f)
         return None
 
-    def save_config(self, host, port, db_name):
-        config = {"host": host, "port": int(port), "db_name": db_name}
+    def save_config(self, host, port, db_name, username=None, password=None):
+        config = {
+            "host": host,
+            "port": int(port),
+            "db_name": db_name,
+            "username": username,
+            "password": password
+        }
         with open(self._config_file, "w") as f:
             json.dump(config, f)
         self.config = config
@@ -31,11 +37,17 @@ class Database:
         if not self.config:
             return False, "Configuration not found"
         try:
-            self.client = MongoClient(
-                host=self.config["host"],
-                port=self.config["port"],
-                serverSelectionTimeoutMS=2000
-            )
+            kwargs = {
+                "host": self.config["host"],
+                "port": self.config["port"],
+                "serverSelectionTimeoutMS": 2000
+            }
+            if self.config.get("username") and self.config.get("password"):
+                kwargs["username"] = self.config["username"]
+                kwargs["password"] = self.config["password"]
+                kwargs["authSource"] = "admin"
+
+            self.client = MongoClient(**kwargs)
             # Check connection
             self.client.admin.command('ping')
             self.db = self.client[self.config["db_name"]]

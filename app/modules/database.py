@@ -3,6 +3,7 @@ import os
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, OperationFailure
 
+
 class Database:
     _instance = None
     _config_file = "config.json"
@@ -59,6 +60,17 @@ class Database:
         if self.db is not None:
             return self.db[name]
         return None
+
+    def better_get_collection(self, name):
+        if name is None:
+            raise Exception("Collection name cannot be None")
+
+        if self.db is None:
+            raise Exception("Database instance not initialized")
+        collection = self.get_collection(name)
+        if collection is None:
+            raise Exception(f"Collection '{name}' not found")
+        return collection
 
     def run_transaction(self, callback):
         """

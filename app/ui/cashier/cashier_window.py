@@ -1,12 +1,22 @@
-from PyQt6.QtCore import Qt, QSize, pyqtSignal
+from PyQt6.QtCore import QSize, Qt, pyqtSignal
 from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidgetItem, QHeaderView, QGridLayout, QScrollArea, QLabel, QFrame
-from qfluentwidgets import (SubtitleLabel, TableWidget, LineEdit, PushButton,
-                             FluentIcon as FIF, InfoBar, StrongBodyLabel, TitleLabel)
-from ..modules.product import Product
-from ..modules.category import Category
-from ..modules.sale import Sale
-from ..modules.receipt import Receipt
+from PyQt6.QtWidgets import (
+    QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QScrollArea,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
+from qfluentwidgets import InfoBar, LineEdit, PushButton, TableWidget
+
+from ...modules.product import Product
+from ...modules.receipt import Receipt
+from ...modules.sale import Sale
+
 
 class TouchButton(PushButton):
     def _postInit(self):
@@ -14,13 +24,14 @@ class TouchButton(PushButton):
         self.setIconSize(QSize(32, 32))
         self.setStyleSheet("font-size: 18px; font-weight: bold;")
 
+
 class CashierWindow(QWidget):
     switchToAdmin = pyqtSignal()
     returnToLauncher = pyqtSignal()
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("واجهة الكاشير / POS Interface")
+        self.setWindowTitle("واجهة الكاشير")
         self.showMaximized()
         self.monoFont = QFont("Monospace")
         self.monoFont.setStyleHint(QFont.StyleHint.Monospace)
@@ -58,26 +69,46 @@ class CashierWindow(QWidget):
         # Item List Table
         self.cartTable = TableWidget()
         self.cartTable.setColumnCount(5)
-        self.cartTable.setHorizontalHeaderLabels(["Item Name", "Price", "QTY", "Discount", "Total"])
-        self.cartTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.cartTable.setHorizontalHeaderLabels(
+            ["الاسم", "السعر", "الكمية", "الخصم", "المجموع"]
+        )
+
+        # Safe header access
+        header = self.cartTable.horizontalHeader()
+        if header is not None:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+
         self.cartTable.setStyleSheet("font-family: Monospace; font-size: 16px;")
-        self.cartTable.verticalHeader().setDefaultSectionSize(60)
-        self.cartTable.horizontalHeader().setFixedHeight(50)
+
+        vheader = self.cartTable.verticalHeader()
+        if vheader is not None:
+            vheader.setDefaultSectionSize(60)
+
+        hheader = self.cartTable.horizontalHeader()
+        if hheader is not None:
+            hheader.setFixedHeight(50)
+
         self.summaryLayout.addWidget(self.cartTable)
 
         # Summary Totals Area
         self.totalsLayout = QGridLayout()
         self.totalsLayout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
-        self.subtotalLabel = QLabel("Subtotal    0.00")
-        self.discountLabel = QLabel("Discount    - 0.00")
-        self.taxLabel      = QLabel("Tax    0.00")
-        self.inhouseLabel  = QLabel("Inhouse Charge    0.00")
-        self.totalLabel    = QLabel("Total Payment    0.00")
-        self.balanceLabel  = QLabel("Balance    $0.00")
+        self.subtotalLabel = QLabel("المجموع الفرعي    0.00")
+        self.discountLabel = QLabel("الخصم    - 0.00")
+        self.taxLabel = QLabel("الضريبة    0.00")
+        self.inhouseLabel = QLabel("رسوم الخدمة    0.00")
+        self.totalLabel = QLabel("المجموع الكلي    0.00")
+        self.balanceLabel = QLabel("الرصيد    $0.00")
 
-        labels = [self.subtotalLabel, self.discountLabel, self.taxLabel,
-                  self.inhouseLabel, self.totalLabel, self.balanceLabel]
+        labels = [
+            self.subtotalLabel,
+            self.discountLabel,
+            self.taxLabel,
+            self.inhouseLabel,
+            self.totalLabel,
+            self.balanceLabel,
+        ]
         for i, lbl in enumerate(labels):
             lbl.setFont(self.monoFont)
             lbl.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -98,6 +129,14 @@ class CashierWindow(QWidget):
         self.searchEdit.textChanged.connect(lambda: self.load_products())
         self.leftPanel.addWidget(self.searchEdit)
 
+        # Code entry for manual product code (added to fix missing attribute)
+        self.codeEdit = LineEdit()
+        self.codeEdit.setPlaceholderText("أدخل رمز المنتج")
+        self.codeEdit.setFixedHeight(60)
+        self.codeEdit.setFont(self.monoFont)
+        self.codeEdit.setStyleSheet("font-size: 24px;")
+        self.leftPanel.addWidget(self.codeEdit)
+
         # Scroll Area for Categories and Products
         self.selectionArea = QScrollArea()
         self.selectionArea.setWidgetResizable(True)
@@ -112,7 +151,9 @@ class CashierWindow(QWidget):
         self.forgotContainer.setFrameShape(QFrame.Shape.Box)
         self.forgotLayout = QVBoxLayout(self.forgotContainer)
         self.forgotTitle = QLabel("FOODS FORGOT")
-        self.forgotTitle.setStyleSheet("font-weight: bold; border-bottom: 1px solid black;")
+        self.forgotTitle.setStyleSheet(
+            "font-weight: bold; border-bottom: 1px solid black;"
+        )
         self.forgotLayout.addWidget(self.forgotTitle)
 
         self.forgotItemsLayout = QVBoxLayout()
@@ -126,15 +167,22 @@ class CashierWindow(QWidget):
         self.customerGroup = QFrame()
         self.customerGroup.setFrameShape(QFrame.Shape.Box)
         self.customerLayout = QVBoxLayout(self.customerGroup)
-        self.customerTitle = QLabel("CUSTOMER")
+        self.customerTitle = QLabel("العميل")
         self.customerTitle.setFont(self.monoFont)
         self.customerLayout.addWidget(self.customerTitle)
 
         self.actionsGrid = QGridLayout()
         self.actionsGrid.setSpacing(10)
-        actions = ["DELETE ITEM", "SETTING", "PROMO", "DISCOUNT", "INHOUSE", "HOLD"]
-        for i, act in enumerate(actions):
-            btn = TouchButton(act)
+        actions = [
+            ("حذف عنصر", "DELETE ITEM"),
+            ("الإعدادات", "SETTING"),
+            ("عرض", "PROMO"),
+            ("خصم", "DISCOUNT"),
+            ("داخلي", "INHOUSE"),
+            ("تعليق", "HOLD"),
+        ]
+        for i, (text, act) in enumerate(actions):
+            btn = TouchButton(text)
             btn.setFont(self.monoFont)
             if act == "DELETE ITEM":
                 btn.clicked.connect(self.clear_cart)
@@ -155,9 +203,14 @@ class CashierWindow(QWidget):
         self.paymentLayout = QVBoxLayout(self.paymentGroup)
         self.paymentLayout.setSpacing(10)
 
-        paymentMethods = ["CASH", "CARD", "GIFT CARD", "LOYALTY"]
-        for pay in paymentMethods:
-            btn = TouchButton(pay)
+        paymentMethods = [
+            ("نقداً", "CASH"),
+            ("بطاقة", "CARD"),
+            ("قسيمة", "GIFT CARD"),
+            ("ولاء", "LOYALTY"),
+        ]
+        for text, pay in paymentMethods:
+            btn = TouchButton(text)
             btn.setFont(self.monoFont)
             btn.setFixedHeight(70)
             if pay == "CASH":
@@ -167,14 +220,22 @@ class CashierWindow(QWidget):
         self.rightPanel.addWidget(self.paymentGroup)
 
     def load_categories(self):
-        # Clear selection layout
+        # Clear selection layout safely
         while self.selectionLayout.count():
             item = self.selectionLayout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-            elif item.layout():
-                # Need to clear sub-layouts too if any
-                pass
+            if item is None:
+                continue
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+            layout = item.layout()
+            if layout is not None:
+                # Recursively clear any sub-layout
+                while layout.count():
+                    subitem = layout.takeAt(0)
+                    subwidget = subitem.widget() if subitem else None
+                    if subwidget:
+                        subwidget.deleteLater()
 
         search_query = self.searchEdit.text()
 
@@ -182,54 +243,67 @@ class CashierWindow(QWidget):
         categories = ["VEGETABLE", "GROCERY", "FRUITS"]
         for cat_name in categories:
             header = QLabel(cat_name)
-            header.setStyleSheet("font-weight: bold; font-size: 16px; margin-top: 10px;")
+            header.setStyleSheet(
+                "font-weight: bold; font-size: 16px; margin-top: 10px;"
+            )
             header.setFont(self.monoFont)
             self.selectionLayout.addWidget(header)
 
             # Products for this category
-            products = Product.get_all_products(search_query=search_query) # Intentional: same products for all
+            products = Product.get_all_products(search_query=search_query)
             for p in products:
                 btn = TouchButton(f"{p['name']} {p['price']:.2f} - 12g")
                 btn.setFont(self.monoFont)
-                btn.setStyleSheet("text-align: left; padding-left: 15px; font-size: 18px;")
+                btn.setStyleSheet(
+                    "text-align: left; padding-left: 15px; font-size: 18px;"
+                )
                 btn.clicked.connect(lambda ch, prod=p: self.add_item(prod))
                 self.selectionLayout.addWidget(btn)
 
         self.load_forgot_foods()
 
     def load_forgot_foods(self):
+        # Clear safely
         while self.forgotItemsLayout.count():
             item = self.forgotItemsLayout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
+            if item is None:
+                continue
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
 
         forgot_foods = [
             {"name": "Lobster Forgot", "price": 50.00},
             {"name": "Cucumber", "price": 50.00},
-            {"name": "Pumpkin", "price": 50.00}
+            {"name": "Pumpkin", "price": 50.00},
         ]
         for f in forgot_foods:
             btn = TouchButton(f"{f['name']} {f['price']:.2f} - 12g")
             btn.setFont(self.monoFont)
             btn.setStyleSheet("text-align: left; padding-left: 15px; font-size: 18px;")
-            btn.clicked.connect(lambda ch, prod=f: self.add_item({
-                "code": "FORGOT", "name": f["name"], "price": f["price"]
-            }))
+            btn.clicked.connect(
+                lambda ch, prod=f: self.add_item(
+                    {"code": "FORGOT", "name": prod["name"], "price": prod["price"]}
+                )
+            )
             self.forgotItemsLayout.addWidget(btn)
 
     def load_products(self, category=None):
-        # Overriding old load_products to use the new category-based listing
+        # Reload categories (including products) when search text changes
         self.load_categories()
 
     def numpad_click(self, val):
-        if val == 'C':
+        """Called by a numeric keypad (if implemented)"""
+        if val == "C":
             self.codeEdit.clear()
         else:
             self.codeEdit.setText(self.codeEdit.text() + val)
 
     def add_by_code(self):
+        """Called when user submits a product code"""
         code = self.codeEdit.text()
-        if not code: return
+        if not code:
+            return
         product = Product.get_product(code)
         if product:
             self.add_item(product)
@@ -244,12 +318,14 @@ class CashierWindow(QWidget):
                 self.update_table()
                 return
 
-        self.cart_items.append({
-            "code": product["code"],
-            "name": product["name"],
-            "price": product["price"],
-            "quantity": 1
-        })
+        self.cart_items.append(
+            {
+                "code": product["code"],
+                "name": product["name"],
+                "price": product["price"],
+                "quantity": 1,
+            }
+        )
         self.update_table()
 
     def update_table(self):
@@ -270,27 +346,28 @@ class CashierWindow(QWidget):
             self.cartTable.setItem(row, 3, QTableWidgetItem(f"{discount:.2f}"))
             self.cartTable.setItem(row, 4, QTableWidgetItem(f"{total:.2f}"))
 
-            subtotal_sum += (price * qty)
+            subtotal_sum += price * qty
             discount_sum += discount
 
-        tax = subtotal_sum * 0.15 # Example 15% tax
-        inhouse = 0 # Example
+        tax = subtotal_sum * 0.15  # Example 15% tax
+        inhouse = 0  # Example
         total_payment = subtotal_sum - discount_sum + tax + inhouse
-        balance = 500.00 # Example placeholder
+        balance = 500.00  # Example placeholder
 
-        self.subtotalLabel.setText(f"Subtotal    {subtotal_sum:10.2f}")
-        self.discountLabel.setText(f"Discount    - {discount_sum:8.2f}")
-        self.taxLabel.setText(f"Tax    {tax:13.2f}")
-        self.inhouseLabel.setText(f"Inhouse Charge    {inhouse:10.2f}")
-        self.totalLabel.setText(f"Total Payment    {total_payment:10.2f}")
-        self.balanceLabel.setText(f"Balance    ${balance:10.2f}")
+        self.subtotalLabel.setText(f"المجموع الفرعي    {subtotal_sum:10.2f}")
+        self.discountLabel.setText(f"الخصم    - {discount_sum:8.2f}")
+        self.taxLabel.setText(f"الضريبة    {tax:13.2f}")
+        self.inhouseLabel.setText(f"رسوم الخدمة    {inhouse:10.2f}")
+        self.totalLabel.setText(f"المجموع الكلي    {total_payment:10.2f}")
+        self.balanceLabel.setText(f"الرصيد    ${balance:10.2f}")
 
     def clear_cart(self):
         self.cart_items = []
         self.update_table()
 
     def checkout(self):
-        if not self.cart_items: return
+        if not self.cart_items:
+            return
         total = sum(item["price"] * item["quantity"] for item in self.cart_items)
         sale = Sale(self.cart_items, total)
         try:

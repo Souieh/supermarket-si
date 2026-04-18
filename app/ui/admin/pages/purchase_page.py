@@ -1,8 +1,10 @@
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTableWidgetItem, QHeaderView
-from qfluentwidgets import (SubtitleLabel, TableWidget, PushButton, FluentIcon as FIF, InfoBar)
-from ..modules.purchase import Purchase
-from .purchase_dialog import PurchaseDialog
+from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem, QVBoxLayout, QWidget
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import InfoBar, PushButton, SubtitleLabel, TableWidget
+
+from ....modules.purchase import Purchase
+from ..components.purchase_dialog import PurchaseDialog
+
 
 class PurchasePage(QWidget):
     def __init__(self, parent=None):
@@ -10,17 +12,19 @@ class PurchasePage(QWidget):
         self.setObjectName("PurchasePage")
         self.layout = QVBoxLayout(self)
 
-        self.titleLabel = SubtitleLabel("سجل المشتريات / Purchase History", self)
+        self.titleLabel = SubtitleLabel("سجل المشتريات", self)
 
-        self.addButton = PushButton(FIF.ADD, "إضافة عملية شراء / Add Purchase", self)
+        self.addButton = PushButton(FIF.ADD, "إضافة عملية شراء", self)
         self.addButton.clicked.connect(self.show_add_dialog)
 
         self.table = TableWidget(self)
         self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels([
-            "التاريخ (Date)", "المورد (Supplier)", "المنتجات (Items)", "الكمية (Qty)", "التكلفة (Cost)"
-        ])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table.setHorizontalHeaderLabels(
+            ["التاريخ", "المورد", "المنتجات", "الكمية", "التكلفة"]
+        )
+        self.table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
 
         self.layout.addWidget(self.titleLabel)
         self.layout.addWidget(self.addButton)
@@ -51,6 +55,8 @@ class PurchasePage(QWidget):
             pur = Purchase(data["items"], data["total_cost"], data["supplier"])
             if pur.process_purchase():
                 self.load_purchases()
-                InfoBar.success("تم", "تم تسجيل المشتريات وتحديث المخزون بنجاح", parent=self)
+                InfoBar.success(
+                    "تم", "تم تسجيل المشتريات وتحديث المخزون بنجاح", parent=self
+                )
             else:
                 InfoBar.error("خطأ", "فشل في تسجيل العملية", parent=self)

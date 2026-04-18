@@ -1,12 +1,12 @@
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QDoubleValidator, QIntValidator
 from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit, ComboBox)
-from ..modules.product import Product
+from ....modules.product import Product
+
 
 class PurchaseDialog(MessageBoxBase):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.titleLabel = SubtitleLabel("تسجيل عملية شراء / Record Purchase", self)
+        self.titleLabel = SubtitleLabel("تسجيل عملية شراء", self)
 
         self.productCombo = ComboBox(self)
         self.qtyEdit = LineEdit(self)
@@ -21,9 +21,9 @@ class PurchaseDialog(MessageBoxBase):
         self.qtyEdit.setValidator(QIntValidator(1, 1000000))
         self.costEdit.setValidator(QDoubleValidator(0.0, 999999.0, 2))
 
-        self.qtyEdit.setPlaceholderText("الكمية المشتراة / Quantity Purchased")
-        self.costEdit.setPlaceholderText("سعر التكلفة الإجمالي / Total Cost")
-        self.supplierEdit.setPlaceholderText("المورد / Supplier")
+        self.qtyEdit.setPlaceholderText("الكمية المشتراة")
+        self.costEdit.setPlaceholderText("سعر التكلفة الإجمالي")
+        self.supplierEdit.setPlaceholderText("المورد")
 
         self.viewLayout.addWidget(self.titleLabel)
         self.viewLayout.addWidget(self.productCombo)
@@ -31,8 +31,8 @@ class PurchaseDialog(MessageBoxBase):
         self.viewLayout.addWidget(self.costEdit)
         self.viewLayout.addWidget(self.supplierEdit)
 
-        self.yesButton.setText("حفظ / Save")
-        self.cancelButton.setText("إلغاء / Cancel")
+        self.yesButton.setText("حفظ")
+        self.cancelButton.setText("إلغاء")
 
     def validate(self):
         return (self.productCombo.currentIndex() >= 0 and
@@ -42,6 +42,13 @@ class PurchaseDialog(MessageBoxBase):
     def accept(self):
         if self.validate():
             super().accept()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        frame = self.frameGeometry()
+        screen = self.screen().availableGeometry().center()
+        frame.moveCenter(screen)
+        self.move(frame.topLeft())
 
     def get_data(self):
         code = self.productCombo.currentData()

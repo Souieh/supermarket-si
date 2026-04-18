@@ -1,12 +1,12 @@
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QDoubleValidator
 from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit,
-                             TextEdit)
+                            TextEdit)
+
 
 class ProductDialog(MessageBoxBase):
     def __init__(self, parent=None, product=None):
         super().__init__(parent)
-        self.titleLabel = SubtitleLabel("إضافة/تعديل منتج / Add/Edit Product", self)
+        self.titleLabel = SubtitleLabel("إضافة/تعديل منتج", self)
 
         self.codeEdit = LineEdit(self)
         self.nameEdit = LineEdit(self)
@@ -16,12 +16,12 @@ class ProductDialog(MessageBoxBase):
         self.descEdit = TextEdit(self)
 
         self.priceEdit.setValidator(QDoubleValidator(0.0, 999999.0, 2))
-        self.codeEdit.setPlaceholderText("الرمز (Code)")
-        self.nameEdit.setPlaceholderText("الاسم (Name)")
-        self.categoryEdit.setPlaceholderText("الفئة (Category)")
-        self.priceEdit.setPlaceholderText("السعر (Price)")
-        self.qtyEdit.setPlaceholderText("الكمية (Qty)")
-        self.descEdit.setPlaceholderText("الوصف (Description)")
+        self.codeEdit.setPlaceholderText("الرمز")
+        self.nameEdit.setPlaceholderText("الاسم")
+        self.categoryEdit.setPlaceholderText("الفئة")
+        self.priceEdit.setPlaceholderText("السعر")
+        self.qtyEdit.setPlaceholderText("الكمية")
+        self.descEdit.setPlaceholderText("الوصف")
         self.descEdit.setFixedHeight(100)
 
         if product:
@@ -31,7 +31,7 @@ class ProductDialog(MessageBoxBase):
             self.priceEdit.setText(str(product.get("price", "")))
             self.qtyEdit.setText(str(product.get("quantity", "")))
             self.descEdit.setText(product.get("description", ""))
-            self.codeEdit.setEnabled(False) # Don't allow changing code
+            self.codeEdit.setEnabled(False)  # Don't allow changing code
 
         self.viewLayout.addWidget(self.titleLabel)
         self.viewLayout.addWidget(self.codeEdit)
@@ -41,8 +41,8 @@ class ProductDialog(MessageBoxBase):
         self.viewLayout.addWidget(self.qtyEdit)
         self.viewLayout.addWidget(self.descEdit)
 
-        self.yesButton.setText("حفظ / Save")
-        self.cancelButton.setText("إلغاء / Cancel")
+        self.yesButton.setText("حفظ")
+        self.cancelButton.setText("إلغاء")
 
     def validate(self):
         return (self.codeEdit.text() and
@@ -53,6 +53,13 @@ class ProductDialog(MessageBoxBase):
     def accept(self):
         if self.validate():
             super().accept()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        frame = self.frameGeometry()
+        screen = self.screen().availableGeometry().center()
+        frame.moveCenter(screen)
+        self.move(frame.topLeft())
 
     def get_data(self):
         return {

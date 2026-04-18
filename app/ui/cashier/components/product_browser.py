@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from qfluentwidgets import (
     InfoBar,
     LineEdit,
+    Pivot,
     PushButton,
     ScrollArea,
     SearchLineEdit,
@@ -34,7 +35,7 @@ class ProductBrowser(QWidget):
         self.search_edit.setPlaceholderText("بحث عن منتجات...")
         self.search_edit.setFixedHeight(50)
         setFont(self.search_edit, 20)
-        self.search_edit.textChanged.connect(self.load_categories)
+        self.search_edit.textChanged.connect(self.filter_products)
 
         self.code_edit = LineEdit()
         self.code_edit.setPlaceholderText("كود المنتج")
@@ -51,6 +52,11 @@ class ProductBrowser(QWidget):
         search_add_layout.addWidget(btn_add_code, 1)
         layout.addLayout(search_add_layout)
 
+        # Category tabs (Pivot)
+        self.pivot = Pivot(self)
+        self.pivot.currentItemChanged.connect(self.filter_products)
+        layout.addWidget(self.pivot)
+
         # Scroll area for products
         self.scroll = ScrollArea()
         self.scroll.setWidgetResizable(True)
@@ -61,6 +67,16 @@ class ProductBrowser(QWidget):
         layout.addWidget(self.scroll)
 
     def load_categories(self):
+        self.pivot.clear()
+        self.pivot.addItem("all", "الكل", self.filter_products)
+
+        categories = Category.get_all_categories()
+        for cat in categories:
+            self.pivot.addItem(cat["name"], cat["name"], self.filter_products)
+
+        self.pivot.setCurrentItem("all")
+
+    def filter_products(self):
         # Clear existing widgets
         while self.product_layout.count():
             item = self.product_layout.takeAt(0)
@@ -71,25 +87,25 @@ class ProductBrowser(QWidget):
                 widget.deleteLater()
 
         search_query = self.search_edit.text()
-        categories = Category.get_all_categories()
+        selected_cat = self.pivot.currentRouteKey()
 
-        for cat in categories:
-            cat_name = cat["name"]
-            header = StrongBodyLabel(cat_name)
-            header.setStyleSheet("margin-top: 10px;")
-            setFont(header, 16, weight=QFont.Weight.Bold)
-            self.product_layout.addWidget(header)
-
+        if selected_cat == "all" or not selected_cat:
+            products = Product.get_all_products(search_query=search_query)
+            for prod in products:
+                self.add_product_button(prod)
+            self.load_forgot_foods()
+        else:
             products = Product.get_all_products(
-                search_query=search_query, category=cat_name
+                search_query=search_query, category=selected_cat
             )
             for prod in products:
-                btn = TouchButton(f"{prod['name']} {prod['price']:.2f}")
-                btn.setStyleSheet("text-align: left; padding-left: 15px;")
-                btn.clicked.connect(lambda ch, p=prod: self.product_selected.emit(p))
-                self.product_layout.addWidget(btn)
+                self.add_product_button(prod)
 
-        self.load_forgot_foods()
+    def add_product_button(self, prod):
+        btn = TouchButton(f"{prod['name']} {prod['price']:.2f}")
+        btn.setStyleSheet("text-align: left; padding-left: 15px;")
+        btn.clicked.connect(lambda ch, p=prod: self.product_selected.emit(p))
+        self.product_layout.addWidget(btn)
 
     def load_forgot_foods(self):
         header = StrongBodyLabel("منتجات منسية")

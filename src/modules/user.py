@@ -33,6 +33,23 @@ class User:
         return list(collection.find({}, {"password": 0}))
 
     @staticmethod
+    def update_user(username, data):
+        db = Database()
+        collection = db.get_collection("users")
+
+        update_data = {}
+        if "role" in data:
+            update_data["role"] = data["role"]
+
+        if "password" in data and data["password"]:
+            update_data["password"] = bcrypt.hashpw(data["password"].encode('utf-8'), bcrypt.gensalt())
+
+        if not update_data:
+            return True
+
+        return collection.update_one({"username": username}, {"$set": update_data})
+
+    @staticmethod
     def authenticate(username, password):
         db = Database()
         collection = db.get_collection("users")

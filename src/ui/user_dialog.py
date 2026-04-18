@@ -3,9 +3,11 @@ from qfluentwidgets import (MessageBoxBase, SubtitleLabel, LineEdit,
 
 
 class UserDialog(MessageBoxBase):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, user=None):
         super().__init__(parent)
-        self.titleLabel = SubtitleLabel("إضافة مستخدم جديد", self)
+        self.user = user
+        title = "تعديل مستخدم" if user else "إضافة مستخدم جديد"
+        self.titleLabel = SubtitleLabel(title, self)
 
         self.userEdit = LineEdit(self)
         self.userEdit.setPlaceholderText("اسم المستخدم")
@@ -13,10 +15,17 @@ class UserDialog(MessageBoxBase):
         self.passEdit = LineEdit(self)
         self.passEdit.setPlaceholderText("كلمة المرور")
         self.passEdit.setEchoMode(LineEdit.EchoMode.Password)
+        if user:
+            self.passEdit.setPlaceholderText("اتركه فارغاً للإبقاء على كلمة المرور الحالية")
 
         self.roleCombo = ComboBox(self)
         self.roleCombo.addItem("أدمن / Admin", "admin")
         self.roleCombo.addItem("كاشير / Cashier", "cashier")
+
+        if user:
+            self.userEdit.setText(user["username"])
+            self.userEdit.setEnabled(False)
+            self.roleCombo.setCurrentIndex(0 if user["role"] == "admin" else 1)
 
         self.viewLayout.addWidget(self.titleLabel)
         self.viewLayout.addWidget(self.userEdit)
@@ -27,6 +36,8 @@ class UserDialog(MessageBoxBase):
         self.cancelButton.setText("إلغاء")
 
     def validate(self):
+        if self.user:
+            return True
         return self.userEdit.text() and self.passEdit.text()
 
     def accept(self):

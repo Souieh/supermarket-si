@@ -18,10 +18,14 @@ class UserPage(QWidget):
         self.addButton = PushButton(FIF.ADD, "إضافة مستخدم", self)
         self.addButton.clicked.connect(self.show_add_dialog)
 
+        self.editButton = PushButton(FIF.EDIT, "تعديل المستخدم", self)
+        self.editButton.clicked.connect(self.show_edit_dialog)
+
         self.deleteButton = PushButton(FIF.DELETE, "حذف المستخدم", self)
         self.deleteButton.clicked.connect(self.delete_user)
 
         self.actionBar.addWidget(self.addButton)
+        self.actionBar.addWidget(self.editButton)
         self.actionBar.addWidget(self.deleteButton)
         self.actionBar.addStretch(1)
 
@@ -55,6 +59,20 @@ class UserPage(QWidget):
                 InfoBar.success("تم", msg, parent=self)
             else:
                 InfoBar.error("خطأ", msg, parent=self)
+
+    def show_edit_dialog(self):
+        row = self.table.currentRow()
+        if row < 0:
+            return
+        username = self.table.item(row, 0).text()
+        role = self.table.item(row, 1).text()
+
+        w = UserDialog(self.window(), {"username": username, "role": role})
+        if w.exec():
+            data = w.get_data()
+            User.update_user(username, data)
+            self.load_users()
+            InfoBar.success("تم", "تم تحديث بيانات المستخدم", parent=self)
 
     def delete_user(self):
         row = self.table.currentRow()

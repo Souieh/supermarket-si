@@ -23,31 +23,31 @@ class Product:
     @staticmethod
     def add_product(product_data):
         db = Database()
-        collection = db.get_collection("products")
+        collection = db.better_get_collection("products")
         return collection.insert_one(product_data).inserted_id
 
     @staticmethod
     def update_product(code, update_data):
         db = Database()
-        collection = db.get_collection("products")
+        collection = db.better_get_collection("products")
         return collection.update_one({"code": code}, {"$set": update_data})
 
     @staticmethod
     def delete_product(code):
         db = Database()
-        collection = db.get_collection("products")
+        collection = db.better_get_collection("products")
         return collection.delete_one({"code": code})
 
     @staticmethod
     def get_product(code):
         db = Database()
-        collection = db.get_collection("products")
+        collection = db.better_get_collection("products")
         return collection.find_one({"code": code})
 
     @staticmethod
     def get_all_products(search_query=None, category=None):
         db = Database()
-        collection = db.get_collection("products")
+        collection = db.better_get_collection("products")
         query = {}
         if search_query:
             query["$or"] = [
@@ -63,7 +63,7 @@ class Product:
     @staticmethod
     def update_stock(code, quantity_change, session=None):
         db = Database()
-        collection = db.get_collection("products")
+        collection = db.better_get_collection("products")
         return collection.update_one(
             {"code": code},
             {"$inc": {"quantity": quantity_change}},

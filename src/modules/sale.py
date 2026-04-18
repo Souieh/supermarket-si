@@ -15,7 +15,7 @@ class Sale:
 
     def _generate_receipt_id(self):
         db = Database()
-        collection = db.get_collection("sales")
+        collection = db.better_get_collection("sales")
         count = collection.count_documents({})
         return f"{count + 1:04d}"
 
@@ -32,7 +32,7 @@ class Sale:
 
         def callback(session):
             # Save sale
-            sales_col = db.get_collection("sales")
+            sales_col = db.better_get_collection("sales")
             sales_col.insert_one(self.to_dict(), session=session)
 
             # Update stock
@@ -46,16 +46,16 @@ class Sale:
     @staticmethod
     def get_sales_history():
         db = Database()
-        collection = db.get_collection("sales")
+        collection = db.better_get_collection("sales")
         return list(collection.find().sort("timestamp", -1))
 
     @staticmethod
     def get_dashboard_stats():
         db = Database()
-        products_col = db.get_collection("products")
-        sales_col = db.get_collection("sales")
-        categories_col = db.get_collection("categories")
-        purchases_col = db.get_collection("purchases")
+        products_col = db.better_get_collection("products")
+        sales_col = db.better_get_collection("sales")
+        categories_col = db.better_get_collection("categories")
+        purchases_col = db.better_get_collection("purchases")
 
         total_products = products_col.count_documents({})
         out_of_stock = products_col.count_documents({"quantity": {"$lte": 0}})

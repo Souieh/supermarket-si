@@ -6,7 +6,7 @@ class User:
     @staticmethod
     def create_user(username, password, role="admin"):
         db = Database()
-        collection = db.get_collection("users")
+        collection = db.better_get_collection("users")
 
         if collection.find_one({"username": username}):
             return False, "اسم المستخدم موجود مسبقاً"
@@ -23,19 +23,19 @@ class User:
     @staticmethod
     def delete_user(username):
         db = Database()
-        collection = db.get_collection("users")
+        collection = db.better_get_collection("users")
         return collection.delete_one({"username": username})
 
     @staticmethod
     def get_all_users():
         db = Database()
-        collection = db.get_collection("users")
+        collection = db.better_get_collection("users")
         return list(collection.find({}, {"password": 0}))
 
     @staticmethod
     def update_user(username, data):
         db = Database()
-        collection = db.get_collection("users")
+        collection = db.better_get_collection("users")
 
         update_data = {}
         if "role" in data:
@@ -52,7 +52,7 @@ class User:
     @staticmethod
     def authenticate(username, password):
         db = Database()
-        collection = db.get_collection("users")
+        collection = db.better_get_collection("users")
         if collection is None:
             return False, "قاعدة البيانات غير متصلة"
 

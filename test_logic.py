@@ -27,7 +27,7 @@ class TestSupermarketLogic(unittest.TestCase):
         # Setup mock database instance
         mock_db_instance = MockDB.return_value
         mock_collection = MagicMock()
-        mock_db_instance.get_collection.return_value = mock_collection
+        mock_db_instance.better_get_collection.return_value = mock_collection
         mock_collection.count_documents.return_value = 0
 
         items = [

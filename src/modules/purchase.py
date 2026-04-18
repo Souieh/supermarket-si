@@ -26,7 +26,7 @@ class Purchase:
 
         def callback(session):
             # Save purchase record
-            purchases_col = db.get_collection("purchases")
+            purchases_col = db.better_get_collection("purchases")
             purchases_col.insert_one(self.to_dict(), session=session)
 
             # Update stock (Increment)
@@ -40,5 +40,5 @@ class Purchase:
     @staticmethod
     def get_purchase_history():
         db = Database()
-        collection = db.get_collection("purchases")
+        collection = db.better_get_collection("purchases")
         return list(collection.find().sort("timestamp", -1))
